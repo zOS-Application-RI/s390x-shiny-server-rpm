@@ -14,10 +14,9 @@ ENV DEBIAN_FRONTEND=noninteractive \
     # LANG=en_US.UTF-8 \
     CRAN=${CRAN:-https://cran.rstudio.com}
 
-RUN DEBIAN_FRONTEND=noninteractive yum update \
+RUN DEBIAN_FRONTEND=noninteractive yum update -y \
     && yum install https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
     && dnf install epel-release \
-    && yum update -y \
     && yum install -y \ 
     python3 \
     cmake \
