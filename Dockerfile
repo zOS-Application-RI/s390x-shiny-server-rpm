@@ -21,12 +21,19 @@ RUN DEBIAN_FRONTEND=noninteractive yum update -y \
     python3 \
     cmake \
     gcc \
-    g++ \
+    gcc-c++ \
+    autoconf \
+    automake \
     git \
-    r-base-dev \
     curl \
     wget
 
+## Setup R
+ADD build_r.sh /tmp/
+RUN cd /tmp \
+    # && wget https://raw.githubusercontent.com/linux-on-ibm-z/scripts/master/R/4.1.1/build_r.sh \
+    # && bash build_r.sh -y -j AdoptJDK-OpenJ9 \
+    && bash build_r.sh -y 
 
 RUN git clone https://github.com/rstudio/shiny-server.git 
     
