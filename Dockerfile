@@ -1,4 +1,4 @@
-FROM registry.redhat.io/ubi8/ubi
+FROM registry.redhat.io/openj9/openj9-11-rhel8
 ARG CRAN
 SHELL ["/bin/bash", "-c"]
 ## Configure default locale, see https://github.com/rocker-org/rocker/issues/19
@@ -17,9 +17,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
 RUN DEBIAN_FRONTEND=noninteractive yum update -y \
     && yum install -y https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm \
     && dnf install -y epel-release \
-    && yum install -y \ 
+    && yum install -y \
     python3 \
-    # cmake \
     gcc \
     gcc-c++ \
     autoconf \
@@ -29,7 +28,8 @@ RUN DEBIAN_FRONTEND=noninteractive yum update -y \
     wget \
     sudo \
     xz \
-    rpm-build
+    rpm-build \
+    cmake
 
 ## Setup R
 ADD build_r.sh /tmp/
@@ -38,12 +38,12 @@ RUN cd /tmp \
     # && bash build_r.sh -y -j AdoptJDK-OpenJ9 \
     && bash build_r.sh -y 
 ## Build CMAKE
-RUN wget http://www.cmake.org/files/v2.8/cmake-2.8.10.tar.gz \
-    && tar -zxf cmake-2.8.10.tar.gz \
-    && cd cmake-2.8.10 \
-    && ./configure --prefix=/usr/local \
-    && gmake install \
-    && cmake -version
+# RUN wget http://www.cmake.org/files/v2.8/cmake-2.8.10.tar.gz \
+#     && tar -zxf cmake-2.8.10.tar.gz \
+#     && cd cmake-2.8.10 \
+#     && ./configure --prefix=/usr/local \
+#     && gmake install \
+#     && cmake -version
 
 RUN git clone https://github.com/rstudio/shiny-server.git 
     
