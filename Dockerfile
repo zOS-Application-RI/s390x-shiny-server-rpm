@@ -40,4 +40,4 @@ RUN git clone https://github.com/rstudio/shiny-server.git
     
 COPY install-node.sh shiny-server/external/node/
 
-RUN /home/linux1/shiny-server/packaging/make-package.sh
+RUN shiny-server/packaging/make-package.sh
