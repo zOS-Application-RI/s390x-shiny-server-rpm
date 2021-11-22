@@ -88,7 +88,7 @@ jobs:
         id: extract
         with:
           image: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}
-          path: /home/linux1/shiny-server/packaging/build/shiny-server-${SHINY_VERSION}-${ARCH}.rpm
+          path: /shiny-server/packaging/build/shiny-server-${SHINY_VERSION}-${ARCH}.rpm
       - 
         name: release
         uses: actions/create-release@v1

@@ -19,7 +19,7 @@ RUN DEBIAN_FRONTEND=noninteractive yum update -y \
     && dnf install -y epel-release \
     && yum install -y \ 
     python3 \
-    cmake \
+    # cmake \
     gcc \
     gcc-c++ \
     autoconf \
@@ -37,6 +37,13 @@ RUN cd /tmp \
     # && wget https://raw.githubusercontent.com/linux-on-ibm-z/scripts/master/R/4.1.1/build_r.sh \
     # && bash build_r.sh -y -j AdoptJDK-OpenJ9 \
     && bash build_r.sh -y 
+## Build CMAKE
+RUN wget http://www.cmake.org/files/v2.8/cmake-2.8.10.tar.gz \
+    && tar -zxf cmake-2.8.10.tar.gz \
+    && cd cmake-2.8.10 \
+    && ./configure --prefix=/usr/local \
+    && gmake install \
+    && cmake -version
 
 RUN git clone https://github.com/rstudio/shiny-server.git 
     
