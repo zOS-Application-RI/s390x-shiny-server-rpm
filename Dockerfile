@@ -27,7 +27,8 @@ RUN DEBIAN_FRONTEND=noninteractive yum update -y \
     git \
     curl \
     wget \
-    sudo
+    sudo \
+    xz
 
 ## Setup R
 ADD build_r.sh /tmp/
