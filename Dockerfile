@@ -1,7 +1,14 @@
 FROM registry.redhat.io/ubi8/ubi
 ARG CRAN
 SHELL ["/bin/bash", "-c"]
-
+## Configure default locale, see https://github.com/rocker-org/rocker/issues/19
+RUN DEBIAN_FRONTEND=noninteractive yum update \
+    && yum install -y --no-install-recommends \
+    && ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime \
+    && apt-get -y install locales tzdata 
+RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
+    && locale-gen en_US.utf8 \
+    && /usr/sbin/update-locale LANG=en_US.UTF-8
 ENV DEBIAN_FRONTEND=noninteractive \
     LC_ALL=en_US.UTF-8 \
     LC_CTYPE=en_US.UTF-8 \
@@ -21,9 +28,7 @@ RUN DEBIAN_FRONTEND=noninteractive yum update \
     r-base-dev \
     curl \
     wget
-RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
-    && locale-gen en_US.utf8 \
-    && /usr/sbin/update-locale LANG=en_US.UTF-8
+
 
 RUN git clone https://github.com/rstudio/shiny-server.git 
     
