@@ -5,6 +5,10 @@ on:
     branches: [ main ]
   pull_request:
     branches: [ main ]
+env:
+  SHINY_VERSION: 1.5.18.0
+  ARCH: s390x
+  GITHUB_TOKEN: ${{ github.token }}
 
 jobs:
   docker:
@@ -47,20 +51,29 @@ jobs:
             ${{ runner.os }}-buildx-
 
       -
-        name: Login to DockerHub
+        name: Login to Redhat
         uses: docker/login-action@v1.10.0
         with:
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+          registry: registry.redhat.io
+          username: ${{ secrets.REDHAT_USERNAME }}
+          password: ${{ secrets.REDHAT_ACCESS_TOKEN }}
+      -
+        name: Login to Docker Hub
+        uses: docker/login-action@v1.10.0
+        with:
+          registry: registry.access.redhat.com
+          username: ${{ secrets.REDHAT_USERNAME }}
+          password: ${{ secrets.REDHAT_ACCESS_TOKEN }}
       -
         name: Build and push
         uses: docker/build-push-action@v2.7.0
         with:
           context: ./
           file: ./Dockerfile
-          push: true
+          # push: true
+          load: true
           # platforms: linux/amd64, linux/arm64, linux/ppc64le, linux/s390x
-          platforms: linux/amd64, linux/s390x
+          platforms: linux/s390x
           # platforms: linux/amd64, linux/s390x
           # platforms: linux/s390x
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}:latest, 
@@ -69,40 +82,27 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache
-      -   
-        name : Docker Scan Image
-        id: scan
-        uses: anchore/scan-action@v3.1.0
+      
+      - 
+        uses: shrink/actions-docker-extract@v1
+        id: extract
         with:
           image: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}
-          fail-build: false
-          acs-report-enable: true
-
-      # - name: Upload result to GitHub Code Scanning-1
-      #   uses: github/codeql-action/upload-sarif@v1
-      #   with:
-      #     sarif_file: ${{ steps.scan.outputs.sarif }}
-
-      - name: Container image scan
-        uses: Azure/container-scan@v0.1
+          path: /home/linux1/shiny-server/packaging/build/shiny-server-${SHINY_VERSION}-${ARCH}.rpm
+      - 
+        name: release
+        uses: actions/create-release@v1
+        id: create_release
         with:
-          image-name: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}
-          username: ${{ secrets.DOCKER_HUB_USERNAME }}
-          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
-
-      - name: Run Snyk to check Docker image for vulnerabilities
-        continue-on-error: true
-        uses: snyk/actions/docker@master
+          draft: false
+          prerelease: false
+          release_name: v${SHINY_VERSION}
+          tag_name: ${{ github.ref }}
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          GITHUB_TOKEN: ${{ github.token }}
+      - 
+        name: Upload Dist
+        uses: actions/upload-artifact@v2
         with:
-          image: ${{ secrets.DOCKER_HUB_USERNAME }}/${{ github.event.repository.name }}
-          args: --file=Dockerfile
-      - name: Upload result to GitHub Code Scanning
-        uses: github/codeql-action/upload-sarif@v1
-        with:
-          sarif_file: snyk.sarif
-
-      -
-        name: Image digest
-        run: echo ${{ steps.docker_build.outputs.digest }}
+          path: ${{ steps.extract.outputs.destination }}
+          name: shiny-server-${SHINY_VERSION}-${arch}.rpm

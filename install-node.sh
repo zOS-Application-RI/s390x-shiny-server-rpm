@@ -2,10 +2,6 @@
 
 set -eux
 
-# From the relevant SHASUMS256.txt file at:
-# https://github.com/jcheng5/node-centos6/releases
-# The node-v{VERSION}-linux-x64.tar.xz checksum is the one we need.
-
 cd $(dirname $0)
 cd ../..
 
