@@ -1,4 +1,4 @@
-FROM ubi8/ubi
+FROM registry.redhat.io/ubi8/ubi
 ARG CRAN
 SHELL ["/bin/bash", "-c"]
 RUN source /root/setenv.sh 
