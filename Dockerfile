@@ -29,7 +29,7 @@ RUN DEBIAN_FRONTEND=noninteractive yum update -y \
     wget \
     sudo \
     xz \
-    rpmbuild
+    rpm-build
 
 ## Setup R
 ADD build_r.sh /tmp/
