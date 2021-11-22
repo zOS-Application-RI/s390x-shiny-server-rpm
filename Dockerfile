@@ -2,10 +2,10 @@ FROM registry.redhat.io/ubi8/ubi
 ARG CRAN
 SHELL ["/bin/bash", "-c"]
 ## Configure default locale, see https://github.com/rocker-org/rocker/issues/19
-RUN DEBIAN_FRONTEND=noninteractive yum update \
+RUN DEBIAN_FRONTEND=noninteractive yum -y update \
     && yum install -y --no-install-recommends \
     && ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime \
-    && apt-get -y install locales tzdata 
+    && yum -y install locales tzdata 
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen \
     && locale-gen en_US.utf8 \
     && /usr/sbin/update-locale LANG=en_US.UTF-8
