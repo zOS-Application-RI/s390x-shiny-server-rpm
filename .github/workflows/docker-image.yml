@@ -102,7 +102,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
       - 
         name: Upload Dist
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           path: ${{ steps.extract.outputs.destination }}
           name: shiny-server-${SHINY_VERSION}-${arch}.rpm
